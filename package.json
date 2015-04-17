@@ -1,0 +1,26 @@
+{
+  "name": "generic",
+  "version": "1.0.0",
+  "description": "generic services for node based web applications",
+  "main": "generic.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sameerkvaidya/generic.git"
+  },
+  "keywords": [
+    "generic",
+    "code",
+    "common",
+    "reusable",
+    "modular"
+  ],
+  "author": "sameer k vaidya <sameerkvaidya@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sameerkvaidya/generic/issues"
+  },
+  "homepage": "https://github.com/sameerkvaidya/generic"
+}
