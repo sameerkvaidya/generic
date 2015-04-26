@@ -266,7 +266,28 @@ var generic = {
 					return res.serverError(err);
 				})
 				.pipe(res);
+		},
+
+		downloadFromExternalStorage: function(req, res){
+
+
+			var skippers3 = require('skipper-s3');
+		    skippers3 = new skippers3({
+						    	bucket: process.env.S3_BUCKET,
+	      						key: process.env.S3_KEY,
+	      						secret: process.env.S3_SECRET
+					});
+
+		    // Stream the file down
+		    skippers3.read(req.param('path'))
+		    .on('error', function (err){
+		      return res.serverError(err);
+		    })
+		    .pipe(res);
+
+			
 		}
+
 
 
 	},
