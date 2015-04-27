@@ -230,6 +230,9 @@ var generic = {
 		},
 
 
+		/**
+		 * upload file to s3
+		 */
 		uploadToExternalStorage: function(req, res){
 
 			console.log("Bucket name : "+process.env.S3_BUCKET);
@@ -259,7 +262,9 @@ var generic = {
 
 
 		},
-
+		/**
+		 * read file from local syste
+		 */
 		download: function(req, res){
 			fs.createReadStream(req.param('path'))
 				.on('error', function(err){
@@ -268,6 +273,9 @@ var generic = {
 				.pipe(res);
 		},
 
+		/**
+		 * read file from s3
+		 */
 		downloadFromExternalStorage: function(req, res){
 
 
