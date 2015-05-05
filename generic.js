@@ -9,25 +9,30 @@
  ****************************************   .emailService  *****************************************
  ****************************************         |        *****************************************
  ****************************************         |        *****************************************
- ****************************************        send()    *****************************************
- ****************************************        bulk()    *****************************************
+ ****************************************       .send()    *****************************************
+ ****************************************       .bulk()    *****************************************
  ***************************************************************************************************
  ****************************************   .uploadService *****************************************
  ****************************************         |        *****************************************
  ****************************************         |        *****************************************
- ****************************************    uploadLocal() *****************************************
- ************************************* uploadToExternalStorage()************************************
- ****************************************      download()  *****************************************
+ ****************************************   .uploadLocal() *****************************************
+ *************************************.uploadToExternalStorage()************************************
+ ****************************************     .download()  *****************************************
  ****************************************                  *****************************************
  ****************************************                  *****************************************
+ ***************************************************************************************************
  ****************************************                  *****************************************
+ ****************************************      .token      *****************************************
+ ****************************************         |        *****************************************
+ ****************************************         |        *****************************************
+ ****************************************   .generate()    *****************************************
  ****************************************                  *****************************************
  ***************************************************************************************************
  ***************************************************************************************************/ 
 
 var nodemailer = require("nodemailer");
 var fs = require('fs');
-
+var uuid = require("node-uuid");
 var dotenv = require('dotenv');
 dotenv.load();
 
@@ -77,19 +82,15 @@ var generic = {
 		 * user: user@gmail.com
 		 * pass: pass1234
 		 */
-		init: function(protocol, service, user, password){
-			smtpTransport = nodemailer.
-					createSmtpTransport(
-										protocol, 
-										{
-											service: service, 
-											auth:
-												{
-													user:user, 
-													pass:password
-												}
-										}
-										);
+		init: function(service, user, password){
+			smtpTransport = nodemailer.createTransport(
+				{   service: service, 
+					auth: {
+							user:user, 
+							pass:password
+						  } 
+				}
+			);
 		},
 		
 
@@ -102,7 +103,7 @@ var generic = {
  	    *
  	    *
  	    *   mailOptions: {
- 	    *   	from: "user1@mail.com",
+ 	    *   	from: "name <user1@mail.com>",
 		*		to  : "user2@mail.com",
 		*		subject: "yo",
 		*		text: "plain text message",
@@ -119,23 +120,23 @@ var generic = {
 
 
 
-				init(clientProperties.protocol, clientProperties.emailService, 
+				init(clientProperties.emailService, 
 					clientProperties.emailUser, clientProperties.emailPass);
 				
 			}
 
-			smtpTransport.sendEmail(mailOptions, function(err, res){
+			smtpTransport.sendMail(mailOptions, function(err, res){
 
 				if(err){
 					//you might want to add record, fix service
-					console.error("Failed to send email. ");
+					console.error("Failed to send email. "+err);
 				}else{
-					console.debug("email was delivered to :"+mailOptions.to + ", from : "+mailOptions.from_email);
+					console.log("email was delivered to :"+mailOptions.to + ", from : "+mailOptions.from);
 				}
 			});
 
 
-			return "sending email"
+			
 		},
 
 
@@ -230,9 +231,6 @@ var generic = {
 		},
 
 
-		/**
-		 * upload file to s3
-		 */
 		uploadToExternalStorage: function(req, res){
 
 			console.log("Bucket name : "+process.env.S3_BUCKET);
@@ -262,42 +260,28 @@ var generic = {
 
 
 		},
-		/**
-		 * read file from local syste
-		 */
+
 		download: function(req, res){
 			fs.createReadStream(req.param('path'))
 				.on('error', function(err){
 					return res.serverError(err);
 				})
 				.pipe(res);
-		},
-
-		/**
-		 * read file from s3
-		 */
-		downloadFromExternalStorage: function(req, res){
-
-
-			var skippers3 = require('skipper-s3');
-		    skippers3 = new skippers3({
-						    	bucket: process.env.S3_BUCKET,
-	      						key: process.env.S3_KEY,
-	      						secret: process.env.S3_SECRET
-					});
-
-		    // Stream the file down
-		    skippers3.read(req.param('path'))
-		    .on('error', function (err){
-		      return res.serverError(err);
-		    })
-		    .pipe(res);
-
-			
 		}
 
 
+	},
 
+/***************************************************************************************************
+ * Generate token 
+ * 
+ *
+ **************************************************************************************************/
+
+	token: {
+		generate: function(){
+			return { value: uuid.v4(), issuedAt: new Date() };
+		}
 	},
 
 
@@ -323,8 +307,3 @@ var generic = {
 
 
 module.exports = generic;
-
-
-
-
-
